@@ -54,7 +54,7 @@ const DomoForm = (props) => {
   );
 };
 
-const changePassForm = (props) => {
+const ChangePassForm = (props) => {
   return (
     <form id="changePassForm" name="changePassForm"
           onSubmit={handleChangePass}
@@ -62,12 +62,12 @@ const changePassForm = (props) => {
           method="POST"
           className="mainForm"
       >
-      <label htmlFor="newPass">New Password: </label>
+      <label htmlFor="newPass">Password: </label>
       <input id="pass" type="password" name="pass" placeholder="password" />
-      <label htmlFor="pass2">New Password: </label>
+      <label htmlFor="pass2">Password: </label>
       <input id="pass2" type="password" name="pass2" placeholder="retype password" />
       <input type="hidden" name="_csrf" value={props.csrf} />
-      <input className="formSubmit" type="submit" value="Change Password" />
+      <input className="formSubmit" type="submit" value="Submit" />
     </form>      
   );
 };
@@ -75,13 +75,26 @@ const changePassForm = (props) => {
 const handleChangePass = (e) => {
   e.preventDefault();
   
-  // will fill in once changePassForm actually works
+  $("#domoMessage").animate({width:'hide'},350);
+  
+  if($("#pass").val() == '' || $("#pass2").val() == '') {
+    handleError("RAWR! All fields are required");
+    return false;
+  }
+  
+  if($("#pass").val() !== $("#pass2").val()) {
+    handleError("RAWR! All fields are required");
+    return false;
+  }
+  
+  console.dir($("#changePassForm").serialize());
+  
+  sendAjax('POST', $("#changePassForm").attr("action"), $("#changePassForm").serialize(), redirect);
   
   return false;
 };
 
 const DomoList = function(props) {
-  console.log('domo list');
   if(props.domos.length === 0) {
     return (
       <div className="domoList">
@@ -131,13 +144,12 @@ const setupMakerPage = function(csrf) {
 };
 
 const setupChangePassPage = function(csrf) {
-  console.log('change password page');
   ReactDOM.render(
     <h1></h1>, document.querySelector("#makeDomo")
   );
   
   ReactDOM.render(
-    <changePassForm csrf={csrf} />, document.querySelector("#domos")
+    <ChangePassForm csrf={csrf} />, document.querySelector("#domos")
   );
 };
 

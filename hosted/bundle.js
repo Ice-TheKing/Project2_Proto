@@ -68,7 +68,7 @@ var DomoForm = function DomoForm(props) {
   );
 };
 
-var changePassForm = function changePassForm(props) {
+var ChangePassForm = function ChangePassForm(props) {
   return React.createElement(
     "form",
     { id: "changePassForm", name: "changePassForm",
@@ -80,30 +80,43 @@ var changePassForm = function changePassForm(props) {
     React.createElement(
       "label",
       { htmlFor: "newPass" },
-      "New Password: "
+      "Password: "
     ),
     React.createElement("input", { id: "pass", type: "password", name: "pass", placeholder: "password" }),
     React.createElement(
       "label",
       { htmlFor: "pass2" },
-      "New Password: "
+      "Password: "
     ),
     React.createElement("input", { id: "pass2", type: "password", name: "pass2", placeholder: "retype password" }),
     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-    React.createElement("input", { className: "formSubmit", type: "submit", value: "Change Password" })
+    React.createElement("input", { className: "formSubmit", type: "submit", value: "Submit" })
   );
 };
 
 var handleChangePass = function handleChangePass(e) {
   e.preventDefault();
 
-  // will fill in once changePassForm actually works
+  $("#domoMessage").animate({ width: 'hide' }, 350);
+
+  if ($("#pass").val() == '' || $("#pass2").val() == '') {
+    handleError("RAWR! All fields are required");
+    return false;
+  }
+
+  if ($("#pass").val() !== $("#pass2").val()) {
+    handleError("RAWR! All fields are required");
+    return false;
+  }
+
+  console.dir($("#changePassForm").serialize());
+
+  sendAjax('POST', $("#changePassForm").attr("action"), $("#changePassForm").serialize(), redirect);
 
   return false;
 };
 
 var DomoList = function DomoList(props) {
-  console.log('domo list');
   if (props.domos.length === 0) {
     return React.createElement(
       "div",
@@ -168,10 +181,9 @@ var setupMakerPage = function setupMakerPage(csrf) {
 };
 
 var setupChangePassPage = function setupChangePassPage(csrf) {
-  console.log('change password page');
   ReactDOM.render(React.createElement("h1", null), document.querySelector("#makeDomo"));
 
-  ReactDOM.render(React.createElement("changePassForm", { csrf: csrf }), document.querySelector("#domos"));
+  ReactDOM.render(React.createElement(ChangePassForm, { csrf: csrf }), document.querySelector("#domos"));
 };
 
 var setupNavButtons = function setupNavButtons(csrf) {
