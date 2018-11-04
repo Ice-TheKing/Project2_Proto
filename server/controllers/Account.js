@@ -6,9 +6,9 @@ const loginPage = (req, res) => {
   res.render('login', { csrfToken: req.csrfToken() });
 };
 
-const changePassPage = (req, res) => {
-  res.render('changePass', { csrfToken: req.csrfToken() });
-};
+// const changePassPage = (req, res) => {
+//   res.render('changePass', { csrfToken: req.csrfToken() });
+// };
 
 const getToken = (request, response) => {
   const req = request;
@@ -98,4 +98,4 @@ module.exports.login = login;
 module.exports.logout = logout;
 module.exports.signup = signup;
 module.exports.getToken = getToken;
-module.exports.changePassPage = changePassPage;
+// module.exports.changePassPage = changePassPage;

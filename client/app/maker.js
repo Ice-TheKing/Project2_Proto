@@ -54,33 +54,34 @@ const DomoForm = (props) => {
   );
 };
 
-const changePassWindow = (props) => {
-  //return (
-  //  <form id="changePassForm" name="changePassForm"
-  //        onSubmit={handleChangePass}
-  //        action="/changePass"
-  //        method="POST"
-  //        className="mainForm"
-  //    >
-  //    <label htmlFor="newPass">New Password: </label>
-  //    <input id="pass" type="password" name="pass" placeholder="password" />
-  //    <label htmlFor="pass2">New Password: </label>
-  //    <input id="pass2" type="password" name="pass2" placeholder="retype password" />
-  //    <input type="hidden" name="_csrf" value={props.csrf} />
-  //    <input className="formSubmit" type="submit" value="Change Password" />
-  //  </form>      
-  //);
+const changePassForm = (props) => {
+  return (
+    <form id="changePassForm" name="changePassForm"
+          onSubmit={handleChangePass}
+          action="/changePass"
+          method="POST"
+          className="mainForm"
+      >
+      <label htmlFor="newPass">New Password: </label>
+      <input id="pass" type="password" name="pass" placeholder="password" />
+      <label htmlFor="pass2">New Password: </label>
+      <input id="pass2" type="password" name="pass2" placeholder="retype password" />
+      <input type="hidden" name="_csrf" value={props.csrf} />
+      <input className="formSubmit" type="submit" value="Change Password" />
+    </form>      
+  );
 };
 
 const handleChangePass = (e) => {
   e.preventDefault();
   
-  // will fill in once changePassWindow actually works
+  // will fill in once changePassForm actually works
   
   return false;
 };
 
 const DomoList = function(props) {
+  console.log('domo list');
   if(props.domos.length === 0) {
     return (
       <div className="domoList">
@@ -117,7 +118,7 @@ const loadDomosFromServer = () => {
   });
 };
 
-const setup = function(csrf) {
+const setupMakerPage = function(csrf) {
   ReactDOM.render(
     <DomoForm csrf={csrf} />, document.querySelector("#makeDomo")
   );
@@ -129,9 +130,38 @@ const setup = function(csrf) {
   loadDomosFromServer();
 };
 
+const setupChangePassPage = function(csrf) {
+  console.log('change password page');
+  ReactDOM.render(
+    <h1></h1>, document.querySelector("#makeDomo")
+  );
+  
+  ReactDOM.render(
+    <changePassForm csrf={csrf} />, document.querySelector("#domos")
+  );
+};
+
+const setupNavButtons = function(csrf) {
+  const makerButton = document.querySelector("#makerButton");
+  const changePassButton = document.querySelector("#changePassButton");
+  
+  makerButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    setupMakerPage(csrf);
+    return false;
+  });
+    
+  changePassButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    setupChangePassPage(csrf);
+    return false;
+  });
+};
+
 const getToken = () => {
   sendAjax('GET', '/getToken', null, (result) => {
-    setup(result.csrfToken);
+    setupNavButtons(result.csrfToken);
+    setupMakerPage(result.csrfToken);
   });
 };
 

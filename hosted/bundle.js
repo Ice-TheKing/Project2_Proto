@@ -68,33 +68,42 @@ var DomoForm = function DomoForm(props) {
   );
 };
 
-var changePassWindow = function changePassWindow(props) {
-  //return (
-  //  <form id="changePassForm" name="changePassForm"
-  //        onSubmit={handleChangePass}
-  //        action="/changePass"
-  //        method="POST"
-  //        className="mainForm"
-  //    >
-  //    <label htmlFor="newPass">New Password: </label>
-  //    <input id="pass" type="password" name="pass" placeholder="password" />
-  //    <label htmlFor="pass2">New Password: </label>
-  //    <input id="pass2" type="password" name="pass2" placeholder="retype password" />
-  //    <input type="hidden" name="_csrf" value={props.csrf} />
-  //    <input className="formSubmit" type="submit" value="Change Password" />
-  //  </form>      
-  //);
+var changePassForm = function changePassForm(props) {
+  return React.createElement(
+    "form",
+    { id: "changePassForm", name: "changePassForm",
+      onSubmit: handleChangePass,
+      action: "/changePass",
+      method: "POST",
+      className: "mainForm"
+    },
+    React.createElement(
+      "label",
+      { htmlFor: "newPass" },
+      "New Password: "
+    ),
+    React.createElement("input", { id: "pass", type: "password", name: "pass", placeholder: "password" }),
+    React.createElement(
+      "label",
+      { htmlFor: "pass2" },
+      "New Password: "
+    ),
+    React.createElement("input", { id: "pass2", type: "password", name: "pass2", placeholder: "retype password" }),
+    React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
+    React.createElement("input", { className: "formSubmit", type: "submit", value: "Change Password" })
+  );
 };
 
 var handleChangePass = function handleChangePass(e) {
   e.preventDefault();
 
-  // will fill in once changePassWindow actually works
+  // will fill in once changePassForm actually works
 
   return false;
 };
 
 var DomoList = function DomoList(props) {
+  console.log('domo list');
   if (props.domos.length === 0) {
     return React.createElement(
       "div",
@@ -150,7 +159,7 @@ var loadDomosFromServer = function loadDomosFromServer() {
   });
 };
 
-var setup = function setup(csrf) {
+var setupMakerPage = function setupMakerPage(csrf) {
   ReactDOM.render(React.createElement(DomoForm, { csrf: csrf }), document.querySelector("#makeDomo"));
 
   ReactDOM.render(React.createElement(DomoList, { domos: [] }), document.querySelector("#domos"));
@@ -158,9 +167,34 @@ var setup = function setup(csrf) {
   loadDomosFromServer();
 };
 
+var setupChangePassPage = function setupChangePassPage(csrf) {
+  console.log('change password page');
+  ReactDOM.render(React.createElement("h1", null), document.querySelector("#makeDomo"));
+
+  ReactDOM.render(React.createElement("changePassForm", { csrf: csrf }), document.querySelector("#domos"));
+};
+
+var setupNavButtons = function setupNavButtons(csrf) {
+  var makerButton = document.querySelector("#makerButton");
+  var changePassButton = document.querySelector("#changePassButton");
+
+  makerButton.addEventListener("click", function (e) {
+    e.preventDefault();
+    setupMakerPage(csrf);
+    return false;
+  });
+
+  changePassButton.addEventListener("click", function (e) {
+    e.preventDefault();
+    setupChangePassPage(csrf);
+    return false;
+  });
+};
+
 var getToken = function getToken() {
   sendAjax('GET', '/getToken', null, function (result) {
-    setup(result.csrfToken);
+    setupNavButtons(result.csrfToken);
+    setupMakerPage(result.csrfToken);
   });
 };
 
