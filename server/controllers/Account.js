@@ -96,50 +96,53 @@ const signup = (request, response) => {
 const changePass = (request, response) => {
   const req = request;
   const res = response;
-  
+
   req.body.pass = `${req.body.pass}`;
   req.body.pass2 = `${req.body.pass2}`;
   // account: req.session.account._id
-  
+
   if (!req.body.pass || !req.body.pass2) {
     return res.status(400).json({ error: 'RAWR! All fields are required' });
   }
-  
+
   if (req.body.pass !== req.body.pass2) {
     return res.status(400).json({ error: 'RAWR! Passwords do not match!' });
   }
-  
-  return Account.AccountModel.generateHash(req.body.pass, (salt, hash) => {
+
+  return Account.AccountModel.generateHash(req.body.pass, (salt, hash) =>
     // get the object in the database
-    return Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
-      if(err) {
-        console.dir(err);
-        return res.status(500).json({ error: 'Internal Server Error. Please try again' });
-      }
-      
-      if(!doc) {
-        console.dir(err);
-        return res.status(400).json({ error: 'Account not found. Please try again' });
-      }
-      console.dir(`old password = ${doc.password}`);
+     Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+       const account = doc;
+
+       if (err) {
+         console.dir(err);
+         return res.status(500).json({ error: 'Internal Server Error. Please try again' });
+       }
+
+       if (!doc) {
+         console.dir(err);
+         return res.status(400).json({ error: 'Account not found. Please try again' });
+       }
+       console.dir(`old password = ${doc.password}`);
       // update password
-      doc.password = hash;
-      doc.salt = salt;
-      console.dir(`new password = ${doc.password}`);
-      
-      const savePromise = doc.save();
-      
-      savePromise.then(() => {
-        req.session.account = Account.AccountModel.toAPI(doc);
-        return res.json({ redirect: '/maker' });
-      });
-      
-      savePromise.catch(error => {
-        console.dir(error);
-        return res.status(400).json({ error: 'An error occurred' });
-      });
-    });
-  });
+       account.password = hash;
+       account.salt = salt;
+       console.dir(`new password = ${doc.password}`);
+
+       const savePromise = doc.save();
+
+       savePromise.then(() => {
+         req.session.account = Account.AccountModel.toAPI(doc);
+         return res.json({ redirect: '/maker' });
+       });
+
+       savePromise.catch(error => {
+         console.dir(error);
+         return res.status(400).json({ error: 'An error occurred' });
+       });
+
+       return res.json({ });
+     }));
 };
 
 module.exports.loginPage = loginPage;
